@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b12">
+<title>World Time — Dhaka Reference</title>
+<style>
+  :root{
+    --bg:#070910;
+    --card:rgba(18,22,34,.78);
+    --border:rgba(255,255,255,.10);
+    --text:#f4f7ff;
+    --muted:#8e98ad;
+    --accent:#7c8cff;
+    --green:#35f58b;
+    --red:#ff4f67;
+  --blue:#4da3ff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    color:var(--text);
+    background:
+      radial-gradient(circle at 15% 0%,rgba(91,108,255,.16),transparent 30%),
+      radial-gradient(circle at 90% 15%,rgba(0,220,255,.08),transparent 25%),
+      var(--bg);
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  header{
+    padding:42px 22px 28px;
+    text-align:center;
+  }
+  .eyebrow{
+    color:var(--accent);
+    font-size:.78rem;
+    font-weight:800;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+  }
+  h1{margin:9px 0 7px;font-size:clamp(2rem,6vw,3.5rem);letter-spacing:-.045em}
+  .subtitle{margin:0;color:var(--muted);font-size:.95rem}
+  .toolbar{
+    width:min(1120px,calc(100% - 28px));
+    margin:0 auto 24px;
+    display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+  }
+  button{
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.055);
+    color:var(--text);
+    border-radius:12px;
+    padding:10px 15px;
+    cursor:pointer;
+    font:inherit;
+  }
+  button:hover{background:rgba(255,255,255,.09)}
+  .legend{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;color:var(--muted);font-size:.8rem}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+  .green{background:var(--green);box-shadow:0 0 12px var(--green)}
+  .red{background:var(--red);box-shadow:0 0 12px var(--red)}
+  main{
+    width:min(1120px,calc(100% - 28px));
+    margin:auto;
+    padding-bottom:45px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(245px,1fr));
+    gap:14px;
+  }
+  .clock{
+    position:relative;
+    overflow:hidden;
+    padding:19px;
+    min-height:175px;
+    border:1px solid var(--border);
+    border-radius:20px;
+    background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025)),var(--card);
+    backdrop-filter:blur(15px);
+    transition:.3s ease;
+  }
+  .clock.reference{border-color:rgba(124,140,255,.48)}
+  .clock.red-glow{
+    border-color:rgba(255,79,103,.9);
+    box-shadow:0 0 16px rgba(255,79,103,.42),inset 0 0 18px rgba(255,79,103,.07);
+  }
+  .clock.blue-glow{
+    border-color:rgba(77,163,255,.9);
+    box-shadow:0 0 16px rgba(77,163,255,.42),inset 0 0 18px rgba(77,163,255,.07);
+  }
+  .clock.green-glow{
+    border-color:rgba(53,245,139,.9);
+    box-shadow:0 0 16px rgba(53,245,139,.42),inset 0 0 18px rgba(53,245,139,.07);
+  }
+  .clock{padding-right:132px}
+  .sprite{position:absolute;right:8px;bottom:8px;width:116px;height:145px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 8px 7px rgba(0,0,0,.38));pointer-events:none;user-select:none;transition:transform .35s ease,filter .35s ease}
+  .clock:hover .sprite{transform:translateY(-5px) scale(1.03);filter:drop-shadow(0 12px 10px rgba(0,0,0,.48))}
+  .sprite-fallback{position:absolute;right:16px;bottom:20px;width:94px;text-align:center;color:var(--muted);font-size:.62rem;line-height:1.25;opacity:.55}
+  .top{display:flex;align-items:center;gap:10px}
+  .flag{font-size:1.45rem}
+  .city{font-weight:750;font-size:1rem}
+  .zone{margin-top:2px;color:var(--muted);font-size:.72rem}
+  .reference-tag{
+    margin-left:auto;
+    padding:4px 7px;border-radius:7px;
+    background:rgba(124,140,255,.13);
+    color:#aeb7ff;font-size:.62rem;font-weight:800;
+  }
+  .time{
+    margin-top:18px;
+    font-size:2rem;
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:-.035em;
+    font-weight:800;
+  }
+  .date{margin-top:9px;color:#c1c8d8;font-size:.86rem}
+  .offset{margin-top:5px;color:var(--muted);font-size:.7rem}
+  footer{text-align:center;color:#596277;font-size:.72rem;padding:0 20px 25px}
+  @media(max-width:560px){
+    header{padding-top:30px}
+    main{grid-template-columns:1fr}
+    .clock{min-height:170px;padding-right:112px}
+    .sprite{width:98px;height:125px;right:3px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">World Time</div>
+  <h1>Time Around the World</h1>
+  <p class="subtitle">Every clock follows its own local date and timezone.</p>
+</header>
+
+<div class="toolbar">
+  <button id="formatBtn">24-hour</button>
+  <div class="legend">
+    <span><i class="dot red"></i>2:00–4:59 PM</span>
+    <span><i class="dot green"></i>6:00–6:59 PM</span>
+    <span><i class="dot" style="background:var(--blue);box-shadow:0 0 12px var(--blue)"></i>7:00–8:59 PM</span>
+  </div>
+</div>
+
+<main id="clocks"></main>
+<footer>25 locations · Reference timezone: Asia/Dhaka · Times update every second</footer>
+
+<script>
+const spriteNames = {
+  "Dhaka":"Incineroar","Sydney":"Corsola","Auckland":"Relicanth","Tokyo":"Ogerpon","Osaka":"Fezandipiti",
+  "Taipei":"Chien-Pao","Singapore":"Hisuian Arcanine","Kuala Lumpur":"Arcanine","New Delhi":"Alolan Muk",
+  "Dubai":"Gigantamax Duraludon","Tehran":"Entei","Riyadh":"Sandaconda","Cairo":"Lucario",
+  "Istanbul":"Midnight Lycanroc","Zaragoza":"Paldean Tauros — Aqua Breed","Madrid":"Paldean Tauros — Combat Breed",
+  "Seville":"Paldean Tauros — Blaze Breed","Paris":"Eternal Floette","London":"Galarian Obstagoon",
+  "São Paulo":"Skeledirge","Rio de Janeiro":"Mega Barbaracle","Mexico City":"Mega Hawlucha",
+  "New York City":"Black Kyurem","Chicago":"Swampert","San Francisco":"White Kyurem"
+};
+// ⬇️ Fill these in with your GitHub username/repo/branch.
+// Upload each city's GIF to a "Photos" folder in that repo, named after the city
+// (e.g. Photos/Dhaka.gif, Photos/New York City.gif, Photos/São Paulo.gif).
+const GITHUB_USER = "your-username";
+const GITHUB_REPO = "your-repo";
+const GITHUB_BRANCH = "main";
+
+function spriteUrl(city){
+  // jsDelivr mirrors GitHub through a CDN, so it loads much faster than
+  // raw.githubusercontent.com or hotlinking projectpokemon.org directly.
+  return `https://cdn.jsdelivr.net/gh/${GITHUB_USER}/${GITHUB_REPO}@${GITHUB_BRANCH}/Photos/${encodeURIComponent(city)}.gif`;
+}
+
+const spriteMap = {};
+Object.keys(spriteNames).forEach(city=>{ spriteMap[city] = spriteUrl(city); });
+
+const places = [
+  ["🇧🇩","Dhaka","Bangladesh","Asia/Dhaka",true],
+  ["🇯🇵","Tokyo","Japan","Asia/Tokyo"],
+  ["🇯🇵","Osaka","Japan","Asia/Tokyo"],
+  ["🇦🇺","Sydney","Australia","Australia/Sydney"],
+  ["🇳🇿","Auckland","New Zealand","Pacific/Auckland"],
+  ["🇹🇼","Taipei","Taiwan","Asia/Taipei"],
+  ["🇸🇬","Singapore","Singapore","Asia/Singapore"],
+  ["🇲🇾","Kuala Lumpur","Malaysia","Asia/Kuala_Lumpur"],
+  ["🇮🇳","New Delhi","India","Asia/Kolkata"],
+  ["🇦🇪","Dubai","UAE","Asia/Dubai"],
+  ["🇮🇷","Tehran","Iran","Asia/Tehran"],
+  ["🇸🇦","Riyadh","Saudi Arabia","Asia/Riyadh"],
+  ["🇪🇬","Cairo","Egypt","Africa/Cairo"],
+  ["🇹🇷","Istanbul","Türkiye","Europe/Istanbul"],
+  ["🇪🇸","Zaragoza","Spain","Europe/Madrid"],
+  ["🇪🇸","Madrid","Spain","Europe/Madrid"],
+  ["🇪🇸","Seville","Spain","Europe/Madrid"],
+  ["🇫🇷","Paris","France","Europe/Paris"],
+  ["🇬🇧","London","United Kingdom","Europe/London"],
+  ["🇧🇷","São Paulo","Brazil","America/Sao_Paulo"],
+  ["🇧🇷","Rio de Janeiro","Brazil","America/Sao_Paulo"],
+  ["🇲🇽","Mexico City","Mexico","America/Mexico_City"],
+  ["🇺🇸","New York City","USA","America/New_York"],
+  ["🇺🇸","Chicago","USA","America/Chicago"],
+  ["🇺🇸","San Francisco","USA","America/Los_Angeles"]
+];
+
+let hour12 = false;
+const container = document.getElementById("clocks");
+
+places.forEach((p,i)=>{
+  const card=document.createElement("article");
+  card.className="clock"+(p[4]?" reference":"");
+  card.innerHTML=`
+    <div class="top">
+      <span class="flag">${p[0]}</span>
+      <div>
+        <div class="city">${p[1]}</div>
+        <div class="zone">${p[2]}</div>
+      </div>
+      ${p[4]?'<span class="reference-tag">REFERENCE</span>':''}
+    </div>
+    <img class="sprite" data-city="${p[1]}" src="${spriteMap[p[1]]}" alt="${spriteNames[p[1]]} sprite"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div class="sprite-fallback" style="display:none">${spriteNames[p[1]]}<br>sprite missing</div>
+    <div class="time" id="time-${i}">--:--:--</div>
+    <div class="date" id="date-${i}">Loading…</div>
+    <div class="offset" id="offset-${i}">${p[3]}</div>
+  `;
+  container.appendChild(card);
+  p.card=card;
+});
+
+function parts(date,tz,options){
+  return new Intl.DateTimeFormat("en-US",{timeZone:tz,...options}).format(date);
+}
+function update(){
+  const now=new Date();
+  places.forEach((p,i)=>{
+    const timeEl=document.getElementById(`time-${i}`);
+    const dateEl=document.getElementById(`date-${i}`);
+    const offsetEl=document.getElementById(`offset-${i}`);
+
+    timeEl.textContent=new Intl.DateTimeFormat("en-US",{
+      timeZone:p[3],hour:"2-digit",minute:"2-digit",second:"2-digit",
+      hour12
+    }).format(now);
+
+    dateEl.textContent=new Intl.DateTimeFormat("en-US",{
+      timeZone:p[3],weekday:"long",month:"long",day:"numeric",year:"numeric"
+    }).format(now);
+
+    const hour=Number(new Intl.DateTimeFormat("en-US",{
+      timeZone:p[3],hour:"numeric",hour12:false
+    }).format(now));
+
+    p.card.classList.remove("red-glow","green-glow","blue-glow");
+    if(hour>=14 && hour<17) p.card.classList.add("red-glow");
+    else if(hour>=18 && hour<19) p.card.classList.add("green-glow");
+    else if(hour>=19 && hour<21) p.card.classList.add("blue-glow");
+
+    const tzParts=new Intl.DateTimeFormat("en-US",{
+      timeZone:p[3],timeZoneName:"longOffset"
+    }).formatToParts(now);
+    const zone=tzParts.find(x=>x.type==="timeZoneName");
+    offsetEl.textContent=zone ? `${p[3]} · ${zone.value.replace("GMT","UTC")}` : p[3];
+  });
+}
+document.getElementById("formatBtn").onclick=()=>{
+  hour12=!hour12;
+  document.getElementById("formatBtn").textContent=hour12?"12-hour":"24-hour";
+  update();
+};
+update();
+setInterval(update,1000);
+</script>
+</body>
+</html>
