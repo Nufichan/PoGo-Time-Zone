@@ -135,9 +135,9 @@
 <div class="toolbar">
   <button id="formatBtn">24-hour</button>
   <div class="legend">
-    <span><i class="dot red"></i>2:00–4:59 PM</span>
-    <span><i class="dot green"></i>6:00–6:59 PM</span>
-    <span><i class="dot" style="background:var(--blue);box-shadow:0 0 12px var(--blue)"></i>7:00–7:59 PM</span>
+    <span><i class="dot red"></i>Community Day</span>
+    <span><i class="dot green"></i>Spotlight Hour</span>
+    <span><i class="dot" style="background:var(--blue);box-shadow:0 0 12px var(--blue)"></i>Showcase Hour</span>
   </div>
 </div>
 
@@ -154,16 +154,11 @@ const spriteNames = {
   "São Paulo":"Skeledirge","Rio de Janeiro":"Mega Barbaracle","Mexico City":"Mega Hawlucha",
   "New York City":"Black Kyurem","Chicago":"Swampert","San Francisco":"White Kyurem"
 };
-// ⬇️ Fill these in with your GitHub username/repo/branch.
-// Upload each city's GIF to a "Photos" folder in that repo, named after the city
-// (e.g. Photos/Dhaka.gif, Photos/New York City.gif, Photos/São Paulo.gif).
 const GITHUB_USER = "Nufichan";
 const GITHUB_REPO = "PoGo-Time-Zone";
 const GITHUB_BRANCH = "main";
 
 function spriteUrl(city){
-  // jsDelivr mirrors GitHub through a CDN, so it loads much faster than
-  // raw.githubusercontent.com or hotlinking projectpokemon.org directly.
   return `https://cdn.jsdelivr.net/gh/${GITHUB_USER}/${GITHUB_REPO}@${GITHUB_BRANCH}/Photos/${encodeURIComponent(city)}.gif`;
 }
 
@@ -176,7 +171,7 @@ const places = [
   ["🇯🇵","Osaka","Japan","Asia/Tokyo"],
   ["🇦🇺","Sydney","Australia","Australia/Sydney"],
   ["🇳🇿","Auckland","New Zealand","Pacific/Auckland"],
-  ["🇹🇼","Taipei","Taiwan","Asia/Taipei"],
+  ["🇨🇳","Taipei","Taiwan,China","Asia/Taipei"],
   ["🇸🇬","Singapore","Singapore","Asia/Singapore"],
   ["🇲🇾","Kuala Lumpur","Malaysia","Asia/Kuala_Lumpur"],
   ["🇮🇳","New Delhi","India","Asia/Kolkata"],
