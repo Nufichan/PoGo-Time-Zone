@@ -93,9 +93,46 @@
     box-shadow:0 0 16px rgba(53,245,139,.42),inset 0 0 18px rgba(53,245,139,.07);
   }
   .clock{padding-right:132px}
-  .sprite{position:absolute;right:8px;bottom:8px;width:116px;height:145px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 8px 7px rgba(0,0,0,.38));pointer-events:none;user-select:none;transition:transform .35s ease,filter .35s ease}
+  .sprite{position:absolute;right:8px;bottom:8px;width:116px;height:145px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 8px 7px rgba(0,0,0,.38));user-select:none;transition:transform .35s ease,filter .35s ease;cursor:pointer}
   .clock:hover .sprite{transform:translateY(-5px) scale(1.03);filter:drop-shadow(0 12px 10px rgba(0,0,0,.48))}
   .sprite-fallback{position:absolute;right:16px;bottom:20px;width:94px;text-align:center;color:var(--muted);font-size:.62rem;line-height:1.25;opacity:.55}
+
+  .coord-overlay{
+    position:fixed;inset:0;
+    background:rgba(5,7,14,.62);
+    backdrop-filter:blur(6px);
+    display:none;align-items:center;justify-content:center;
+    z-index:999;padding:20px;
+  }
+  .coord-overlay.show{display:flex}
+  .coord-banner{
+    position:relative;
+    padding:26px 30px;
+    border-radius:18px;
+    background:linear-gradient(135deg,var(--accent),var(--blue) 45%,var(--green));
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    min-width:260px;max-width:90vw;
+    animation:popIn .25s ease;
+  }
+  @keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .coord-close{
+    position:absolute;top:8px;right:10px;
+    background:none;border:none;color:#fff;
+    font-size:1rem;cursor:pointer;padding:6px;line-height:1;
+  }
+  .coord-city{font-weight:800;font-size:1.08rem;color:#fff;margin-bottom:12px;letter-spacing:.02em}
+  .coord-row{
+    display:flex;align-items:center;gap:10px;
+    background:rgba(0,0,0,.28);border-radius:12px;padding:10px 12px;
+  }
+  .coord-value{color:#fff;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9rem;flex:1;word-break:break-all}
+  .coord-copy{
+    border:none;border-radius:8px;background:rgba(255,255,255,.92);
+    color:#12162a;font-weight:800;padding:7px 12px;cursor:pointer;
+    font-size:.76rem;white-space:nowrap;transition:background .2s;
+  }
+  .coord-copy:hover{background:#fff}
+  .coord-copy.copied{background:var(--green)}
   .top{display:flex;align-items:center;gap:10px}
   .flag{font-size:1.45rem}
   .city{font-weight:750;font-size:1rem}
@@ -136,13 +173,24 @@
   <button id="formatBtn">24-hour</button>
   <div class="legend">
     <span><i class="dot red"></i>Community Day</span>
-    <span><i class="dot green"></i>Spotlight Hour</span>
+    <span><i class="dot green"></i>Spotlight & Raid Hour</span>
     <span><i class="dot" style="background:var(--blue);box-shadow:0 0 12px var(--blue)"></i>Showcase Hour</span>
   </div>
 </div>
 
 <main id="clocks"></main>
 <footer>25 locations · Reference timezone: Asia/Dhaka · Times update every second</footer>
+
+<div id="coordOverlay" class="coord-overlay" onclick="if(event.target===this) closeCoordBanner()">
+  <div class="coord-banner">
+    <button class="coord-close" onclick="closeCoordBanner()">✕</button>
+    <div class="coord-city" id="coordCity"></div>
+    <div class="coord-row">
+      <span class="coord-value" id="coordValue"></span>
+      <button class="coord-copy" id="coordCopyBtn" onclick="copyCoord()">Copy</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const spriteNames = {
@@ -165,13 +213,69 @@ function spriteUrl(city){
 const spriteMap = {};
 Object.keys(spriteNames).forEach(city=>{ spriteMap[city] = spriteUrl(city); });
 
+const coordinates = {
+  "Dhaka":"23.8103° N, 90.4125° E",
+  "Tokyo":"35.6762° N, 139.6503° E",
+  "Osaka":"34.6937° N, 135.5023° E",
+  "Sydney":"33.8688° S, 151.2093° E",
+  "Auckland":"36.8485° S, 174.7633° E",
+  "Taipei":"25.0330° N, 121.5654° E",
+  "Singapore":"1.3521° N, 103.8198° E",
+  "Kuala Lumpur":"3.1390° N, 101.6869° E",
+  "New Delhi":"28.6139° N, 77.2090° E",
+  "Dubai":"25.2048° N, 55.2708° E",
+  "Tehran":"35.6892° N, 51.3890° E",
+  "Riyadh":"24.7136° N, 46.6753° E",
+  "Cairo":"30.0444° N, 31.2357° E",
+  "Istanbul":"41.0082° N, 28.9784° E",
+  "Zaragoza":"41.6488° N, 0.8891° W",
+  "Madrid":"40.4168° N, 3.7038° W",
+  "Seville":"37.3891° N, 5.9845° W",
+  "Paris":"48.8566° N, 2.3522° E",
+  "London":"51.5074° N, 0.1278° W",
+  "São Paulo":"23.5505° S, 46.6333° W",
+  "Rio de Janeiro":"22.9068° S, 43.1729° W",
+  "Mexico City":"19.4326° N, 99.1332° W",
+  "New York City":"40.7128° N, 74.0060° W",
+  "Chicago":"41.8781° N, 87.6298° W",
+  "San Francisco":"37.7749° N, 122.4194° W"
+};
+
+function openCoordBanner(city){
+  document.getElementById("coordCity").textContent = city;
+  document.getElementById("coordValue").textContent = coordinates[city] || "Coordinates unavailable";
+  const btn = document.getElementById("coordCopyBtn");
+  btn.textContent = "Copy";
+  btn.classList.remove("copied");
+  document.getElementById("coordOverlay").classList.add("show");
+}
+function closeCoordBanner(){
+  document.getElementById("coordOverlay").classList.remove("show");
+}
+function copyCoord(){
+  const text = document.getElementById("coordValue").textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById("coordCopyBtn");
+    btn.textContent = "Copied!";
+    btn.classList.add("copied");
+    setTimeout(()=>{ btn.textContent = "Copy"; btn.classList.remove("copied"); },1500);
+  }).catch(()=>{
+    const btn = document.getElementById("coordCopyBtn");
+    btn.textContent = "Failed";
+    setTimeout(()=>{ btn.textContent = "Copy"; },1500);
+  });
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape") closeCoordBanner();
+});
+
 const places = [
   ["🇧🇩","Dhaka","Bangladesh","Asia/Dhaka",true],
   ["🇯🇵","Tokyo","Japan","Asia/Tokyo"],
   ["🇯🇵","Osaka","Japan","Asia/Tokyo"],
   ["🇦🇺","Sydney","Australia","Australia/Sydney"],
   ["🇳🇿","Auckland","New Zealand","Pacific/Auckland"],
-  ["🇨🇳","Taipei","Taiwan,China","Asia/Taipei"],
+  ["🇹🇼","Taipei","Taiwan","Asia/Taipei"],
   ["🇸🇬","Singapore","Singapore","Asia/Singapore"],
   ["🇲🇾","Kuala Lumpur","Malaysia","Asia/Kuala_Lumpur"],
   ["🇮🇳","New Delhi","India","Asia/Kolkata"],
@@ -209,6 +313,7 @@ places.forEach((p,i)=>{
       ${p[4]?'<span class="reference-tag">REFERENCE</span>':''}
     </div>
     <img class="sprite" data-city="${p[1]}" src="${spriteMap[p[1]]}" alt="${spriteNames[p[1]]} sprite"
+         onclick="openCoordBanner('${p[1]}')"
          onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
     <div class="sprite-fallback" style="display:none">${spriteNames[p[1]]}<br>sprite missing</div>
     <div class="time" id="time-${i}">--:--:--</div>
@@ -245,7 +350,7 @@ function update(){
     p.card.classList.remove("red-glow","green-glow","blue-glow");
     if(hour>=14 && hour<17) p.card.classList.add("red-glow");
     else if(hour>=18 && hour<19) p.card.classList.add("green-glow");
-    else if(hour>=19 && hour<20) p.card.classList.add("blue-glow");
+    else if(hour>=19 && hour<21) p.card.classList.add("blue-glow");
 
     const tzParts=new Intl.DateTimeFormat("en-US",{
       timeZone:p[3],timeZoneName:"longOffset"
