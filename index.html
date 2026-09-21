@@ -161,6 +161,8 @@
     .sprite{width:98px;height:125px;right:3px}
   }
 </style>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1d1b3a">
 </head>
 <body>
 <header>
@@ -369,5 +371,10 @@ document.getElementById("formatBtn").onclick=()=>{
 update();
 setInterval(update,1000);
 </script>
+  <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+  </script>
 </body>
 </html>
