@@ -354,7 +354,7 @@ function update(){
     p.card.classList.remove("red-glow","green-glow","blue-glow");
     if(hour>=14 && hour<17) p.card.classList.add("red-glow");
     else if(hour>=18 && hour<19) p.card.classList.add("green-glow");
-    else if(hour>=19 && hour<21) p.card.classList.add("blue-glow");
+    else if(hour>=19 && hour<20) p.card.classList.add("blue-glow");
 
     const tzParts=new Intl.DateTimeFormat("en-US",{
       timeZone:p[3],timeZoneName:"longOffset"
