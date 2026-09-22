@@ -124,7 +124,10 @@
   .coord-row{
     display:flex;align-items:center;gap:10px;
     background:rgba(0,0,0,.28);border-radius:12px;padding:10px 12px;
+    margin-bottom:8px;
   }
+  .coord-row:last-child{margin-bottom:0}
+  .coord-label{color:rgba(255,255,255,.75);font-size:.72rem;font-weight:700;white-space:nowrap}
   .coord-value{color:#fff;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9rem;flex:1;word-break:break-all}
   .coord-copy{
     border:none;border-radius:8px;background:rgba(255,255,255,.92);
@@ -187,10 +190,7 @@
   <div class="coord-banner">
     <button class="coord-close" onclick="closeCoordBanner()">✕</button>
     <div class="coord-city" id="coordCity"></div>
-    <div class="coord-row">
-      <span class="coord-value" id="coordValue"></span>
-      <button class="coord-copy" id="coordCopyBtn" onclick="copyCoord()">Copy</button>
-    </div>
+    <div id="coordRows"></div>
   </div>
 </div>
 
@@ -249,26 +249,33 @@ const coordinates = {
 
 function openCoordBanner(city){
   document.getElementById("coordCity").textContent = city;
-  document.getElementById("coordValue").textContent = coordinates[city] || "Coordinates unavailable";
-  const btn = document.getElementById("coordCopyBtn");
-  btn.textContent = "Copy";
-  btn.classList.remove("copied");
+  const data = coordinates[city];
+  const rows = Array.isArray(data)
+    ? data
+    : [{label:null, value: data || "Coordinates unavailable"}];
+
+  document.getElementById("coordRows").innerHTML = rows.map((r,i)=>`
+    <div class="coord-row">
+      ${r.label ? `<span class="coord-label">${r.label}</span>` : ""}
+      <span class="coord-value" id="coordValue-${i}">${r.value}</span>
+      <button class="coord-copy" onclick="copyCoord(${i})">Copy</button>
+    </div>
+  `).join("");
+
   document.getElementById("coordOverlay").classList.add("show");
 }
 function closeCoordBanner(){
   document.getElementById("coordOverlay").classList.remove("show");
 }
-function copyCoord(){
-  const text = document.getElementById("coordValue").textContent;
+function copyCoord(i){
+  const el = document.getElementById(`coordValue-${i}`);
+  const text = el.textContent;
   navigator.clipboard.writeText(text).then(()=>{
-    const btn = document.getElementById("coordCopyBtn");
+    const btn = el.nextElementSibling;
+    const original = btn.textContent;
     btn.textContent = "Copied!";
     btn.classList.add("copied");
-    setTimeout(()=>{ btn.textContent = "Copy"; btn.classList.remove("copied"); },1500);
-  }).catch(()=>{
-    const btn = document.getElementById("coordCopyBtn");
-    btn.textContent = "Failed";
-    setTimeout(()=>{ btn.textContent = "Copy"; },1500);
+    setTimeout(()=>{ btn.textContent = original; btn.classList.remove("copied"); },1500);
   });
 }
 document.addEventListener("keydown",e=>{
