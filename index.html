@@ -197,7 +197,7 @@
 <script>
 const spriteNames = {
   "Dhaka":"Incineroar","Sydney":"Corsola","Auckland":"Relicanth","Tokyo":"Ogerpon","Osaka":"Fezandipiti","Seoul":"Mega Lopunny",
-  "Taipei":"Chien-Pao","Singapore":"Hisuian Arcanine","Kuala Lumpur":"Arcanine","New Delhi":"Alolan Muk",
+  "Taipei":"Chien-Pao","Singapore":"Hisuian Arcanine","Kuala Lumpur":"Arcanine","Mumbai":"Alolan Muk",
   "Dubai":"Gigantamax Duraludon","Tehran":"Entei","Riyadh":"Sandaconda","Cairo":"Lucario",
   "Istanbul":"Midnight Lycanroc","Zaragoza":"Paldean Tauros — Aqua Breed","Madrid":"Paldean Tauros — Combat Breed",
   "Seville":"Paldean Tauros — Blaze Breed","Paris":"Eternal Floette","London":"Galarian Obstagoon",
@@ -217,33 +217,39 @@ Object.keys(spriteNames).forEach(city=>{ spriteMap[city] = spriteUrl(city); });
 
 const coordinates = {
   "Dhaka": [
-    {label:"City Center", value:"23.8103° N, 90.4125° E"},
-    {label:"Airport", value:"23.8433° N, 90.3978° E"}
+    {label:"Dhanmondi", value:"23.748190,90.377977"},
+    {label:"Airport", value:"23.735030,90.402503"}
   ],
-  "Tokyo":"35.6762° N, 139.6503° E",
-  "Osaka":"34.6937° N, 135.5023° E",
+  "Tokyo":"35.669590,139.699690",
+  "Osaka":"34.650110,135.510500",
   "Sydney":"-33.862400,151.210700",
   "Auckland":"-36.852095,174.763180",
-  "Seoul":"62828.3737",
-  "Taipei":"25.0330° N, 121.5654° E",
-  "Singapore":"1.283800,103.858500",
-  "Kuala Lumpur":"3.1390° N, 101.6869° E",
-  "New Delhi":"28.6139° N, 77.2090° E",
+  "Seoul":"37.566011,126.978114",
+  "Taipei":"25.047386,121.517158",
+  "Singapore":"1.287481,103.851829",
+  "Kuala Lumpur":"3.156457,101.713357",
+  "Mumbai":"19.025993,72.839677",
   "Dubai":"25.075201,55.131068",
-  "Tehran":"35.6892° N, 51.3890° E",
-  "Riyadh":"24.7136° N, 46.6753° E",
-  "Cairo":"30.0444° N, 31.2357° E",
-  "Istanbul":"41.0082° N, 28.9784° E",
-  "Zaragoza":"41.6488° N, 0.8891° W",
-  "Madrid":"40.4168° N, 3.7038° W",
-  "Seville":"37.3891° N, 5.9845° W",
-  "Paris":"48.8566° N, 2.3522° E",
-  "London":"51.5074° N, 0.1278° W",
-  "São Paulo":"23.5505° S, 46.6333° W",
-  "Rio de Janeiro":"22.9068° S, 43.1729° W",
-  "Mexico City":"19.4326° N, 99.1332° W",
+  "Tehran":"35.777801,51.410630",
+  "Riyadh":"24.756886,46.629453",
+  "Cairo":"30.011510,31.208532",
+  "Istanbul":[
+    {label:"Ankara", value:"38.463400,27.216300"},
+    {label:"Istanbul", value:"41.012693,28.980088"}
+  ],
+  "Zaragoza":"41.657700,-0.896813",
+  "Madrid":[
+    {label:"Park", value:"40.458393,-3.606734"},
+    {label:"City", value:"40.416705,-3.703583"}
+  ],
+  "Seville":"37.384992,-6.004329",
+  "Paris":"48.891330,2.237520",
+  "London":"51.501637,-0.139840",
+  "São Paulo":"-23.546206,-46.658549",
+  "Rio de Janeiro":"-22.911391,-43.214475",
+  "Mexico City":"19.435700,-99.143900",
   "New York City":"40.755200,-73.983000",
-  "Chicago":"41.8781° N, 87.6298° W",
+  "Chicago":"41.883317,-87.623445",
   "San Francisco":"37.808600,-122.409800"
 };
 
@@ -292,7 +298,7 @@ const places = [
   ["🇹🇼","Taipei","Taiwan","Asia/Taipei"],
   ["🇸🇬","Singapore","Singapore","Asia/Singapore"],
   ["🇲🇾","Kuala Lumpur","Malaysia","Asia/Kuala_Lumpur"],
-  ["🇮🇳","New Delhi","India","Asia/Kolkata"],
+  ["🇮🇳","Mumbai","India","Asia/Kolkata"],
   ["🇦🇪","Dubai","UAE","Asia/Dubai"],
   ["🇮🇷","Tehran","Iran","Asia/Tehran"],
   ["🇸🇦","Riyadh","Saudi Arabia","Asia/Riyadh"],
